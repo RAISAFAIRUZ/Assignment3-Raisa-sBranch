@@ -1,4 +1,5 @@
-FROM mysql:8.0-debian
+FROM mysql:8.0
+# Use the latest 8.0 version without specifying the debian variant
 
 # Set the desired directories
 ENV MYSQL_LOG_DIR /var/log/mysql
