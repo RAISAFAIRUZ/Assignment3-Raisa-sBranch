@@ -1,5 +1,5 @@
 <?php
-require_once '/config.php';
+require_once 'config.php'; // Ensure config.php is only included once
 
 // Redirect if already logged in
 if (isLoggedIn()) {
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Password must be at least 8 characters long';
     } else {
         try {
-            $pdo = getDBConnection();
+            $pdo = getDBConnection(); // Assuming config.php has this function
             
             // Check if username exists
             $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ?");

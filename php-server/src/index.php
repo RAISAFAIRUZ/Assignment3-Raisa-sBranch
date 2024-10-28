@@ -1,3 +1,10 @@
+<?php
+require_once 'config.php'; // Start PHP code before any HTML output
+
+redirectIfNotLoggedIn(); // Redirect if user is not logged in
+$user = getCurrentUser(); // Get current user information
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,14 +20,7 @@
     <h1>Welcome to my PHP Web Page!</h1>
     <div class="container">
         <div class="welcome-box">
-            <?php
-            require_once 'config.php'; // Updated to use the relative path
-            redirectIfNotLoggedIn();
-            
-            $user = getCurrentUser();
-            ?>
-            
-            <p>Welcome, <?php echo htmlspecialchars($user['username']); ?>!</p>
+            <p>Welcome, <?php echo h($user['username']); ?>!</p>
             <div class="nav-links">
                 <a href="profile.php">Profile</a>
                 <a href="logout.php">Logout</a>

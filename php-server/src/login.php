@@ -1,6 +1,7 @@
 <?php
-require_once '/config.php';
+require_once 'config.php'; // Updated path to config file
 
+// Redirect if already logged in
 if (isLoggedIn()) {
     header('Location: index.php');
     exit();
@@ -9,21 +10,22 @@ if (isLoggedIn()) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'] ?? '';
+    $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
     
     try {
-        $pdo = getDBConnection();
+        $pdo = getDBConnection(); // Assuming getDBConnection is defined in config.php
         $stmt = $pdo->prepare("SELECT id, username, password, is_admin FROM users WHERE username = ?");
         $stmt->execute([$username]);
         $user = $stmt->fetch();
         
         if ($user && password_verify($password, $user['password'])) {
+            // Set session variables for logged-in user
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['is_admin'] = $user['is_admin'];
             
-            header('Location: index.php');
+            header('Location: index.php'); // Redirect to the home page
             exit();
         } else {
             $error = 'Invalid username or password';
