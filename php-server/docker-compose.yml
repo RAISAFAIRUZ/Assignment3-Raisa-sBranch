@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   web:
     build:
@@ -10,21 +12,21 @@ services:
       - ./src:/var/www/html
     depends_on:
       - db
+
   db:
     build:
       context: .
       dockerfile: Dockerfile-db
     container_name: db
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: my_db
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
 volumes:
-  mysql_data:
-    # Define volume for persisting MySQL data
+  mysql_data: # Define volume for persisting MySQL data
