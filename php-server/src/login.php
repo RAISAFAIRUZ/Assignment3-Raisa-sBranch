@@ -51,6 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Login failed. Please try again.';
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html>
