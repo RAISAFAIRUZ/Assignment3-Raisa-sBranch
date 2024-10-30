@@ -1,13 +1,16 @@
 <?php
-require_once '/config.php';
+require_once 'config.php';
+
+// Ensure only admins can access this page
 redirectIfNotLoggedIn();
 redirectIfNotAdmin();
 
 $message = '';
 
+// Handle delete user action
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_user'])) {
     $user_id = (int)$_POST['delete_user'];
-    
+
     try {
         $pdo = getDBConnection();
         
@@ -16,10 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_user'])) {
         $stmt->execute([$user_id]);
         $user = $stmt->fetch();
         
-        if ($user && !$user['is_admin']) {
+        if ($user && !$user['is_admin']) { // Only delete if the user is not an admin
             $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
             $stmt->execute([$user_id]);
             $message = "User has been deleted successfully.";
+        } else {
+            $message = "Cannot delete admin or non-existent user.";
         }
     } catch (PDOException $e) {
         error_log("Admin delete user error: " . $e->getMessage());
@@ -58,7 +63,7 @@ try {
         <h2>Admin Panel</h2>
         
         <?php if ($message): ?>
-            <p class="success"><?php echo h($message); ?></p>
+            <p class="success"><?php echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8'); ?></p>
         <?php endif; ?>
         
         <h3>Registered Users</h3>
@@ -72,14 +77,14 @@ try {
             </tr>
             <?php foreach ($users as $user): ?>
                 <tr>
-                    <td><?php echo h($user['id']); ?></td>
-                    <td><?php echo h($user['username']); ?></td>
+                    <td><?php echo htmlspecialchars($user['id'], ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td><?php echo htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8'); ?></td>
                     <td><?php echo $user['is_admin'] ? 'Yes' : 'No'; ?></td>
-                    <td><?php echo h($user['created_at']); ?></td>
+                    <td><?php echo htmlspecialchars($user['created_at'], ENT_QUOTES, 'UTF-8'); ?></td>
                     <td>
                         <?php if (!$user['is_admin']): ?>
                             <form method="POST" style="display: inline;">
-                                <input type="hidden" name="delete_user" value="<?php echo $user['id']; ?>">
+                                <input type="hidden" name="delete_user" value="<?php echo htmlspecialchars($user['id'], ENT_QUOTES, 'UTF-8'); ?>">
                                 <button type="submit" class="delete-btn" 
                                         onclick="return confirm('Are you sure you want to delete this user?')">
                                     Delete

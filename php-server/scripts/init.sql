@@ -8,4 +8,4 @@ CREATE TABLE users (
 
 -- Insert default admin user with hashed password (admin123)
 INSERT INTO users (username, password, is_admin) 
-VALUES ('admin', '$2y$10$8i5Bx8X9a9luWneTOJ5Ih.QpMdF9sg6c0ZiAk0B5k1YxYQ1tyP6vW', TRUE);
+VALUES ('admin', '$2y$10$uTwEZTAZY.J8I0SUvYpD6uG8q4V3Amr/NLiGJTzQRxnGxd2DyS5vO', TRUE);

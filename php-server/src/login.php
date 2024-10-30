@@ -1,6 +1,11 @@
 <?php
 require_once 'config.php'; // Updated path to config file
 
+// Enable error reporting for debugging (remove in production)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Redirect if already logged in
 if (isLoggedIn()) {
     header('Location: index.php');
@@ -9,23 +14,34 @@ if (isLoggedIn()) {
 
 $error = '';
 
+// Check if the form is submitted via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Retrieve and sanitize input
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
-    
+
     try {
-        $pdo = getDBConnection(); // Assuming getDBConnection is defined in config.php
+        // Connect to the database
+        $pdo = getDBConnection();
+        
+        // Query the database for the user
         $stmt = $pdo->prepare("SELECT id, username, password, is_admin FROM users WHERE username = ?");
         $stmt->execute([$username]);
         $user = $stmt->fetch();
-        
+
+        // Verify password and handle login
         if ($user && password_verify($password, $user['password'])) {
             // Set session variables for logged-in user
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['is_admin'] = $user['is_admin'];
-            
-            header('Location: index.php'); // Redirect to the home page
+
+            // Redirect based on admin status
+            if ($user['is_admin']) {
+                header('Location: admin.php'); // Redirect admin to admin panel
+            } else {
+                header('Location: index.php'); // Redirect regular users to the home page
+            }
             exit();
         } else {
             $error = 'Invalid username or password';
@@ -36,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -56,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h2>Login</h2>
         
         <?php if ($error): ?>
-            <p class="error"><?php echo h($error); ?></p>
+            <p class="error"><?php echo htmlspecialchars($error); ?></p>
         <?php endif; ?>
         
         <form method="POST">
