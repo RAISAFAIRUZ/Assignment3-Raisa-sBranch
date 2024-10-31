@@ -1,16 +1,10 @@
 <?php
-require_once 'config.php'; // Updated path to config file
+require_once 'config.php';
 
 // Enable error reporting for debugging (remove in production)
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
-// Redirect if already logged in
-if (isLoggedIn()) {
-    header('Location: index.php');
-    exit();
-}
 
 $error = '';
 
@@ -34,10 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Set session variables for logged-in user
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
-            $_SESSION['is_admin'] = $user['is_admin'];
+            $_SESSION['is_admin'] = (bool)$user['is_admin'];  // Cast to boolean to avoid any type issues
+
+            // Log admin status for debugging purposes
+            error_log("User is admin: " . ($_SESSION['is_admin'] ? 'Yes' : 'No')); // Logs to server log, not output
 
             // Redirect based on admin status
-            if ($user['is_admin']) {
+            if ($_SESSION['is_admin']) {
                 header('Location: admin.php'); // Redirect admin to admin panel
             } else {
                 header('Location: index.php'); // Redirect regular users to the home page
@@ -51,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Login failed. Please try again.';
     }
 }
-
 ?>
 <!DOCTYPE html>
 <html>

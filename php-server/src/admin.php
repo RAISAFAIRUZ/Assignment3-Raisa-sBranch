@@ -2,9 +2,9 @@
 require_once 'config.php';
 
 // Ensure only admins can access this page
-redirectIfNotLoggedIn();
 redirectIfNotAdmin();
 
+// Initialize message
 $message = '';
 
 // Handle delete user action
@@ -13,12 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_user'])) {
 
     try {
         $pdo = getDBConnection();
-        
+
         // Check if user exists and is not an admin
         $stmt = $pdo->prepare("SELECT is_admin FROM users WHERE id = ?");
         $stmt->execute([$user_id]);
         $user = $stmt->fetch();
-        
+
         if ($user && !$user['is_admin']) { // Only delete if the user is not an admin
             $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
             $stmt->execute([$user_id]);

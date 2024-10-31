@@ -1,8 +1,17 @@
 <?php
 require_once 'config.php'; // Start PHP code before any HTML output
 
-redirectIfNotLoggedIn(); // Redirect if user is not logged in
-$user = getCurrentUser(); // Get current user information
+// Ensure the user is logged in
+redirectIfNotLoggedIn();
+
+// Fetch the current user information
+$user = getCurrentUser();
+
+// Redirect to admin panel if the user is an admin
+if (isAdmin()) {
+    header('Location: admin.php');
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -20,7 +29,7 @@ $user = getCurrentUser(); // Get current user information
     <h1>Welcome to my PHP Web Page!</h1>
     <div class="container">
         <div class="welcome-box">
-            <p>Welcome, <?php echo h($user['username']); ?>!</p>
+            <p>Welcome, <?php echo htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8'); ?>!</p>
             <div class="nav-links">
                 <a href="profile.php">Profile</a>
                 <a href="logout.php">Logout</a>
