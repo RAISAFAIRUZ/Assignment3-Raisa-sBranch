@@ -46,7 +46,7 @@ try {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Panel</title>
+    <title>Registered Users</title>
     <style>
         .container { width: 800px; margin: 50px auto; }
         .success { color: green; }
@@ -56,20 +56,29 @@ try {
         tr:nth-child(even) { background-color: #f9f9f9; }
         .delete-btn { background-color: #ff4444; color: white; border: none; padding: 5px 10px; cursor: pointer; }
         .delete-btn:hover { background-color: #cc0000; }
+        .confirm-delete { display: none; color: red; margin-top: 10px; }
+        .action-buttons { display: flex; gap: 5px; }
     </style>
+    <script>
+        function showConfirmDelete(userId) {
+            document.getElementById('confirm-delete-' + userId).style.display = 'block';
+        }
+
+        function cancelDelete(userId) {
+            document.getElementById('confirm-delete-' + userId).style.display = 'none';
+        }
+    </script>
 </head>
 <body>
     <div class="container">
-        <h2>Admin Panel</h2>
+        <h2>Registered Users</h2>
         
         <?php if ($message): ?>
             <p class="success"><?php echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8'); ?></p>
         <?php endif; ?>
         
-        <h3>Registered Users</h3>
         <table>
             <tr>
-                <th>ID</th>
                 <th>Username</th>
                 <th>Admin Status</th>
                 <th>Created At</th>
@@ -77,19 +86,22 @@ try {
             </tr>
             <?php foreach ($users as $user): ?>
                 <tr>
-                    <td><?php echo htmlspecialchars($user['id'], ENT_QUOTES, 'UTF-8'); ?></td>
                     <td><?php echo htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8'); ?></td>
                     <td><?php echo $user['is_admin'] ? 'Yes' : 'No'; ?></td>
                     <td><?php echo htmlspecialchars($user['created_at'], ENT_QUOTES, 'UTF-8'); ?></td>
                     <td>
                         <?php if (!$user['is_admin']): ?>
-                            <form method="POST" style="display: inline;">
-                                <input type="hidden" name="delete_user" value="<?php echo htmlspecialchars($user['id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                <button type="submit" class="delete-btn" 
-                                        onclick="return confirm('Are you sure you want to delete this user?')">
-                                    Delete
-                                </button>
-                            </form>
+                            <div class="action-buttons">
+                                <button class="delete-btn" onclick="showConfirmDelete(<?php echo $user['id']; ?>)">Delete</button>
+                            </div>
+                            <div id="confirm-delete-<?php echo $user['id']; ?>" class="confirm-delete">
+                                <p>Are you sure you want to delete this user?</p>
+                                <form method="POST" style="display: inline;">
+                                    <input type="hidden" name="delete_user" value="<?php echo htmlspecialchars($user['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                    <button type="submit" class="delete-btn">Yes</button>
+                                </form>
+                                <button onclick="cancelDelete(<?php echo $user['id']; ?>)">No</button>
+                            </div>
                         <?php endif; ?>
                     </td>
                 </tr>
